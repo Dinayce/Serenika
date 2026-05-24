@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Serenika</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --deep: #0d1b2a; --mid: #1d4e6e; --light: #4a9eca;
+  --text: #e8f4f8; --muted: #7bafc4; --surface: #0d2a3f;
+  --font-display: 'Cormorant Garamond', serif;
+  --font-body: 'Jost', sans-serif;
+}
+html, body {
+  height: 100%; background: #060f18;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-body);
+}
+.stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+.star { position: absolute; background: #e8f4f8; border-radius: 50%; }
+.phone {
+  width: 375px; height: 812px; background: var(--deep);
+  border-radius: 40px; overflow: hidden; position: relative;
+  box-shadow: 0 40px 100px rgba(0,0,0,0.8), 0 0 0 1px rgba(74,158,202,0.1);
+}
+.screen {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 56px 24px 90px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.4s ease;
+  overflow-y: auto; overflow-x: hidden;
+}
+.screen.active { opacity: 1; pointer-events: all; }
+.top-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; margin-bottom: 28px; position: relative; z-index: 1; flex-shrink: 0;
+}
+.logo { font-family: var(--font-body); font-size: 13px; font-weight: 400; letter-spacing: 5px; color: var(--text); text-transform: uppercase; }
+.top-bar-actions { display: flex; align-items: center; gap: 14px; }
+.top-bar i { font-size: 20px; color: var(--mid); }
+.music-btn {
+  background: transparent; border: 0.5px solid var(--mid); border-radius: 50px;
+  padding: 5px 12px; display: flex; align-items: center; gap: 6px;
+  cursor: pointer; color: var(--mid); font-size: 11px; font-family: var(--font-body);
+  position: relative; transition: all 0.3s;
+}
+.music-btn.active { border-color: var(--light); color: var(--light); background: var(--surface); }
+.music-btn.pulsing { animation: pulseBtn 1.6s ease-in-out 3; }
+@keyframes pulseBtn {
+  0%   { border-color: var(--mid); color: var(--mid); box-shadow: 0 0 0 0 rgba(74,158,202,0); }
+  40%  { border-color: var(--light); color: var(--light); box-shadow: 0 0 0 6px rgba(74,158,202,0.12); }
+  100% { border-color: var(--mid); color: var(--mid); box-shadow: 0 0 0 0 rgba(74,158,202,0); }
+}
+.hint-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--light);
+  position: absolute; top: -2px; right: -2px; opacity: 0; transition: opacity 0.3s;
+}
+.hint-dot.visible { opacity: 1; }
+.music-btn i { font-size: 14px; }
+.toast {
+  display: none; position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%);
+  background: var(--surface); border: 0.5px solid var(--light); border-radius: 50px;
+  padding: 8px 18px; font-size: 12px; color: var(--light); font-family: var(--font-body);
+  z-index: 100; align-items: center; gap: 8px; white-space: nowrap;
+}
+.toast.visible { display: flex; }
+.bottom-nav {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  display: flex; justify-content: space-around;
+  padding: 12px 0 28px; border-top: 0.5px solid var(--mid);
+  background: var(--deep); z-index: 10;
+}
+.nav-item {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  color: var(--mid); font-size: 10px; font-family: var(--font-body);
+  cursor: pointer; letter-spacing: 1px; text-transform: uppercase; transition: color 0.2s;
+}
+.nav-item.active { color: var(--light); }
+.nav-item i { font-size: 22px; }
+
+/* ACCUEIL */
+.hero-circle {
+  width: 160px; height: 160px; border-radius: 50%;
+  border: 1.5px solid var(--light); background: transparent;
+  margin: 40px auto 36px; position: relative; z-index: 1;
+  animation: breathe 4s ease-in-out infinite;
+}
+@keyframes breathe {
+  0%,100% { box-shadow: 0 0 0 0 rgba(74,158,202,0); }
+  50% { box-shadow: 0 0 40px 8px rgba(74,158,202,0.08); }
+}
+.hero-title { font-family: var(--font-display); font-size: 13px; font-weight: 300; letter-spacing: 6px; color: var(--text); text-align: center; text-transform: uppercase; margin-bottom: 12px; position: relative; z-index: 1; }
+.hero-tagline { font-family: var(--font-display); font-size: 18px; font-style: italic; color: var(--light); text-align: center; margin-bottom: 56px; max-width: 260px; line-height: 1.7; position: relative; z-index: 1; }
+.cta-btn { background: var(--mid); color: var(--text); border: none; border-radius: 50px; padding: 14px 44px; font-size: 13px; font-family: var(--font-body); letter-spacing: 2px; text-transform: uppercase; cursor: pointer; position: relative; z-index: 1; margin-bottom: 16px; transition: background 0.2s; }
+.cta-btn:hover { background: var(--light); }
+.secondary-link { font-size: 12px; color: var(--mid); cursor: pointer; text-decoration: underline; font-family: var(--font-body); position: relative; z-index: 1; letter-spacing: 1px; }
+
+/* PARLER */
+.parler-circle { width: 56px; height: 56px; border-radius: 50%; border: 1.5px solid var(--light); background: transparent; margin-bottom: 14px; position: relative; z-index: 1; flex-shrink: 0; }
+.invitation { font-family: var(--font-display); font-size: 22px; color: var(--text); text-align: center; margin-bottom: 6px; position: relative; z-index: 1; }
+.sub { font-size: 12px; color: var(--mid); text-align: center; margin-bottom: 20px; font-family: var(--font-body); position: relative; z-index: 1; letter-spacing: 1px; }
+.chat-area { width: 100%; flex: 1; display: flex; flex-direction: column; gap: 12px; margin-bottom: 12px; position: relative; z-index: 1; min-height: 200px; }
+.bubble-s { background: var(--mid); color: var(--text); border-radius: 16px 16px 16px 4px; padding: 12px 16px; font-size: 14px; line-height: 1.6; max-width: 85%; align-self: flex-start; font-family: var(--font-body); }
+.bubble-u { background: var(--surface); color: var(--muted); border-radius: 16px 16px 4px 16px; padding: 12px 16px; font-size: 14px; line-height: 1.6; max-width: 85%; align-self: flex-end; font-family: var(--font-body); border: 0.5px solid var(--mid); }
+.typing { display: flex; gap: 5px; align-items: center; padding: 12px 16px; background: var(--mid); border-radius: 16px 16px 16px 4px; width: fit-content; }
+.dot { width: 6px; height: 6px; border-radius: 50%; background: var(--light); opacity: 0.6; animation: blink 1.4s infinite; }
+.dot:nth-child(2) { animation-delay: 0.2s; }
+.dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes blink { 0%,100% { opacity: 0.2; } 50% { opacity: 0.9; } }
+.input-area { display: flex; align-items: center; gap: 10px; width: 100%; background: var(--surface); border-radius: 50px; padding: 10px 16px; border: 0.5px solid var(--mid); position: relative; z-index: 1; flex-shrink: 0; }
+.input-text { flex: 1; background: transparent; border: none; outline: none; color: var(--muted); font-size: 14px; font-family: var(--font-body); }
+.input-text::placeholder { color: var(--mid); }
+.send-btn { width: 32px; height: 32px; border-radius: 50%; background: var(--light); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: background 0.2s; }
+.send-btn:hover { background: var(--mid); }
+.send-btn i { font-size: 16px; color: var(--deep); }
+.send-btn.loading { background: var(--mid); }
+
+/* EXPLORER */
+.section-title { font-size: 10px; letter-spacing: 3px; color: var(--mid); text-transform: uppercase; width: 100%; margin-bottom: 12px; position: relative; z-index: 1; font-family: var(--font-body); flex-shrink: 0; }
+.mood-row { display: flex; gap: 8px; width: 100%; margin-bottom: 24px; position: relative; z-index: 1; flex-shrink: 0; }
+.mood-pill { flex: 1; padding: 8px 0; border-radius: 50px; border: 0.5px solid var(--mid); background: transparent; color: var(--mid); font-size: 11px; font-family: var(--font-body); cursor: pointer; text-align: center; transition: all 0.2s; }
+.mood-pill.active { border-color: var(--light); color: var(--light); background: var(--surface); }
+.mood-pill.pulsing { animation: pulsePill 1.6s ease-in-out 3; }
+@keyframes pulsePill {
+  0%   { border-color: var(--mid); color: var(--mid); box-shadow: 0 0 0 0 rgba(74,158,202,0); }
+  40%  { border-color: var(--light); color: var(--light); box-shadow: 0 0 0 5px rgba(74,158,202,0.1); }
+  100% { border-color: var(--mid); color: var(--mid); box-shadow: 0 0 0 0 rgba(74,158,202,0); }
+}
+.cards-grid { display: flex; flex-direction: column; gap: 10px; width: 100%; position: relative; z-index: 1; }
+.card { background: var(--surface); border: 0.5px solid var(--mid); border-radius: 14px; padding: 16px; display: flex; align-items: center; gap: 14px; cursor: pointer; transition: all 0.2s; }
+.card:hover { border-color: var(--light); }
+.card.completed { border-color: var(--light); opacity: 0.7; }
+.card-icon { width: 44px; height: 44px; border-radius: 50%; border: 0.5px solid var(--mid); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.card-icon i { font-size: 20px; color: var(--light); }
+.card-content { flex: 1; }
+.card-label { font-size: 10px; color: var(--mid); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 3px; font-family: var(--font-body); }
+.card-title { font-size: 15px; font-weight: 400; color: var(--text); font-family: var(--font-body); margin-bottom: 3px; }
+.card-sub { font-size: 12px; color: var(--light); font-family: var(--font-body); }
+.card-arrow { color: var(--mid); font-size: 18px; flex-shrink: 0; }
+
+/* PROFIL */
+.avatar-area { display: flex; flex-direction: column; align-items: center; margin-bottom: 24px; position: relative; z-index: 1; flex-shrink: 0; }
+.avatar-ring { width: 72px; height: 72px; border-radius: 50%; border: 1.5px solid var(--light); display: flex; align-items: center; justify-content: center; margin-bottom: 10px; background: var(--surface); }
+.avatar-ring i { font-size: 28px; color: var(--light); }
+.user-name { font-family: var(--font-display); font-size: 20px; color: var(--text); margin-bottom: 4px; }
+.user-since { font-size: 12px; color: var(--mid); font-family: var(--font-body); letter-spacing: 1px; }
+.stats-row { display: flex; gap: 8px; width: 100%; margin-bottom: 24px; position: relative; z-index: 1; flex-shrink: 0; }
+.stat-card { flex: 1; background: var(--surface); border: 0.5px solid var(--mid); border-radius: 12px; padding: 14px 8px; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: border-color 0.3s; }
+.stat-card.updated { border-color: var(--light); animation: statPulse 0.5s ease; }
+@keyframes statPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+.stat-number { font-family: var(--font-display); font-size: 26px; font-weight: 300; color: var(--light); transition: all 0.3s; }
+.stat-label { font-size: 9px; color: var(--mid); font-family: var(--font-body); text-align: center; letter-spacing: 1px; text-transform: uppercase; }
+.journal-card { width: 100%; background: var(--surface); border: 0.5px solid var(--mid); border-radius: 14px; padding: 16px; margin-bottom: 20px; position: relative; z-index: 1; flex-shrink: 0; }
+.journal-date { font-size: 10px; color: var(--mid); font-family: var(--font-body); margin-bottom: 8px; letter-spacing: 1px; text-transform: uppercase; }
+.journal-text { font-family: var(--font-display); font-size: 16px; font-style: italic; color: var(--muted); line-height: 1.7; }
+.prefs-list { width: 100%; display: flex; flex-direction: column; gap: 8px; position: relative; z-index: 1; }
+.pref-row { display: flex; align-items: center; justify-content: space-between; background: var(--surface); border: 0.5px solid var(--mid); border-radius: 12px; padding: 14px 16px; }
+.pref-left { display: flex; align-items: center; gap: 12px; }
+.pref-left i { font-size: 18px; color: var(--light); }
+.pref-label { font-size: 14px; color: var(--text); font-family: var(--font-body); }
+.pref-value { font-size: 12px; color: var(--mid); font-family: var(--font-body); }
+.toggle { width: 36px; height: 20px; border-radius: 50px; background: var(--mid); position: relative; cursor: pointer; transition: background 0.2s; flex-shrink: 0; }
+.toggle.on { background: var(--light); }
+.toggle-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--text); position: absolute; top: 3px; left: 3px; transition: left 0.2s; }
+.toggle.on .toggle-dot { left: 19px; }
+
+/* LOADING OVERLAY */
+.loading-overlay { display: none; position: absolute; inset: 0; background: rgba(13,27,42,0.7); z-index: 50; align-items: center; justify-content: center; border-radius: 40px; }
+.loading-overlay.visible { display: flex; }
+.loading-spinner { width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid var(--mid); border-top-color: var(--light); animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="stars" id="stars"></div>
+
+<div class="phone" id="phone">
+  <div class="toast" id="toast"><i class="ti ti-music"></i><span id="toastText">Ambiance activée</span></div>
+  <div class="loading-overlay" id="loadingOverlay"><div class="loading-spinner"></div></div>
+
+  <!-- ACCUEIL -->
+  <div class="screen active" id="screen-accueil">
+    <div class="top-bar"><span class="logo">Serenika</span><i class="ti ti-dots"></i></div>
+    <div class="hero-circle"></div>
+    <div class="hero-title">Bienvenue</div>
+    <div class="hero-tagline">Agissez, vous n'aurez plus à y penser.</div>
+    <button class="cta-btn" onclick="goTo('parler')">Commencer maintenant</button>
+    <span class="secondary-link">J'ai déjà un compte</span>
+    <div class="bottom-nav">
+      <div class="nav-item active" onclick="goTo('accueil')"><i class="ti ti-home"></i><span>Accueil</span></div>
+      <div class="nav-item" onclick="goTo('parler')"><i class="ti ti-message-circle"></i><span>Parler</span></div>
+      <div class="nav-item" onclick="goTo('explorer')"><i class="ti ti-compass"></i><span>Explorer</span></div>
+      <div class="nav-item" onclick="goTo('profil')"><i class="ti ti-user"></i><span>Profil</span></div>
+    </div>
+  </div>
+
+  <!-- PARLER -->
+  <div class="screen" id="screen-parler">
+    <div class="top-bar">
+      <span class="logo">Serenika</span>
+      <div class="top-bar-actions">
+        <button class="music-btn" id="musicBtnParler" onclick="toggleMusic()">
+          <div class="hint-dot" id="hintDotParler"></div>
+          <i class="ti ti-music"></i><span id="musicLabelParler">Ambiance</span>
+        </button>
+        <i class="ti ti-dots"></i>
+      </div>
+    </div>
+    <div class="parler-circle"></div>
+    <div class="invitation">Vide ta tête, je t'écoute.</div>
+    <div class="sub">Aucun jugement · Juste toi et l'espace</div>
+    <div class="chat-area" id="chatArea"></div>
+    <div class="input-area">
+      <input class="input-text" id="chatInput" placeholder="Écris ce que tu ressens..." />
+      <button class="send-btn" id="sendBtn" onclick="sendMessage()"><i class="ti ti-arrow-up"></i></button>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item" onclick="goTo('accueil')"><i class="ti ti-home"></i><span>Accueil</span></div>
+      <div class="nav-item active" onclick="goTo('parler')"><i class="ti ti-message-circle"></i><span>Parler</span></div>
+      <div class="nav-item" onclick="goTo('explorer')"><i class="ti ti-compass"></i><span>Explorer</span></div>
+      <div class="nav-item" onclick="goTo('profil')"><i class="ti ti-user"></i><span>Profil</span></div>
+    </div>
+  </div>
+
+  <!-- EXPLORER -->
+  <div class="screen" id="screen-explorer">
+    <div class="top-bar">
+      <span class="logo">Serenika</span>
+      <div class="top-bar-actions">
+        <button class="music-btn" id="musicBtnExplorer" onclick="toggleMusic()">
+          <div class="hint-dot" id="hintDotExplorer"></div>
+          <i class="ti ti-music"></i><span id="musicLabelExplorer">Ambiance</span>
+        </button>
+        <i class="ti ti-search"></i>
+      </div>
+    </div>
+    <div class="section-title">Comment tu te sens ?</div>
+    <div class="mood-row">
+      <button class="mood-pill" onclick="setMood(this)">Épuisé</button>
+      <button class="mood-pill" onclick="setMood(this)">Anxieux</button>
+      <button class="mood-pill" onclick="setMood(this)">Perdu</button>
+      <button class="mood-pill" onclick="setMood(this)">Bien</button>
+    </div>
+    <div class="section-title">Explore à ton rythme</div>
+    <div class="cards-grid">
+      <div class="card" id="card-respiration" onclick="completeDefi('respiration', this)">
+        <div class="card-icon"><i class="ti ti-wind"></i></div>
+        <div class="card-content">
+          <div class="card-label">Exercice guidé</div>
+          <div class="card-title">Respiration 4-7-8</div>
+          <div class="card-sub">3 minutes · Apaise le système nerveux</div>
+        </div>
+        <i class="ti ti-chevron-right card-arrow"></i>
+      </div>
+      <div class="card" id="card-lecture" onclick="completeDefi('lecture', this)">
+        <div class="card-icon"><i class="ti ti-feather"></i></div>
+        <div class="card-content">
+          <div class="card-label">Lecture inspirante</div>
+          <div class="card-title">Le pouvoir du silence</div>
+          <div class="card-sub">2 min · Sagesse universelle</div>
+        </div>
+        <i class="ti ti-chevron-right card-arrow"></i>
+      </div>
+      <div class="card" id="card-defi" onclick="completeDefi('defi', this)">
+        <div class="card-icon"><i class="ti ti-bolt"></i></div>
+        <div class="card-content">
+          <div class="card-label">Défi d'action</div>
+          <div class="card-title">Une seule chose maintenant</div>
+          <div class="card-sub">5 minutes · Reprends le contrôle</div>
+        </div>
+        <i class="ti ti-chevron-right card-arrow"></i>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item" onclick="goTo('accueil')"><i class="ti ti-home"></i><span>Accueil</span></div>
+      <div class="nav-item" onclick="goTo('parler')"><i class="ti ti-message-circle"></i><span>Parler</span></div>
+      <div class="nav-item active" onclick="goTo('explorer')"><i class="ti ti-compass"></i><span>Explorer</span></div>
+      <div class="nav-item" onclick="goTo('profil')"><i class="ti ti-user"></i><span>Profil</span></div>
+    </div>
+  </div>
+
+  <!-- PROFIL -->
+  <div class="screen" id="screen-profil">
+    <div class="top-bar"><span class="logo">Serenika</span><i class="ti ti-settings"></i></div>
+    <div class="avatar-area">
+      <div class="avatar-ring"></div>
+      <div class="user-name">Serenika</div>
+      <div class="user-since" id="userSince">Avec Serenika depuis aujourd'hui 🌊</div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card" id="statJours"><div class="stat-number" id="statJoursNum">1</div><div class="stat-label">Jours de suite</div></div>
+      <div class="stat-card" id="statSessions"><div class="stat-number" id="statSessionsNum">0</div><div class="stat-label">Sessions</div></div>
+      <div class="stat-card" id="statDefis"><div class="stat-number" id="statDefisNum">0</div><div class="stat-label">Défis</div></div>
+    </div>
+    <div class="section-title">Ma dernière réflexion</div>
+    <div class="journal-card">
+      <div class="journal-date" id="journalDate">Aujourd'hui</div>
+      <div class="journal-text" id="journalText">Commence une conversation pour voir ta réflexion ici...</div>
+    </div>
+    <div class="section-title">Mes préférences</div>
+    <div class="prefs-list">
+      <div class="pref-row">
+        <div class="pref-left"><i class="ti ti-music"></i><span class="pref-label">Ambiance musicale</span></div>
+        <div class="toggle on" onclick="this.classList.toggle('on')"><div class="toggle-dot"></div></div>
+      </div>
+      <div class="pref-row">
+        <div class="pref-left"><i class="ti ti-bell"></i><span class="pref-label">Notifications</span></div>
+        <div class="toggle" onclick="this.classList.toggle('on')"><div class="toggle-dot"></div></div>
+      </div>
+      <div class="pref-row">
+        <div class="pref-left"><i class="ti ti-language"></i><span class="pref-label">Langue</span></div>
+        <div class="pref-value">Français</div>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item" onclick="goTo('accueil')"><i class="ti ti-home"></i><span>Accueil</span></div>
+      <div class="nav-item" onclick="goTo('parler')"><i class="ti ti-message-circle"></i><span>Parler</span></div>
+      <div class="nav-item" onclick="goTo('explorer')"><i class="ti ti-compass"></i><span>Explorer</span></div>
+      <div class="nav-item active" onclick="goTo('profil')"><i class="ti ti-user"></i><span>Profil</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// STARS
+const starsEl = document.getElementById('stars');
+for (let i = 0; i < 80; i++) {
+  const s = document.createElement('div');
+  s.className = 'star';
+  s.style.top = Math.random() * 100 + '%';
+  s.style.left = Math.random() * 100 + '%';
+  s.style.opacity = (Math.random() * 0.4 + 0.05).toFixed(2);
+  s.style.width = s.style.height = Math.random() > 0.7 ? '3px' : '2px';
+  starsEl.appendChild(s);
+}
+
+// STATE
+const state = { sessions: 0, defis: 0, jours: 1, lastReflexion: '', completedDefis: new Set() };
+let conversationHistory = [];
+let musicOn = false;
+let parlerPulsed = false, explorerPulsed = false, moodChosen = false;
+
+// INIT CHAT
+function initChat() {
+  const chatArea = document.getElementById('chatArea');
+  chatArea.innerHTML = '';
+  if (conversationHistory.length === 0) {
+    addBubble('s', "Bonjour 🌊 Qu'est-ce qui occupe ton esprit en ce moment ?");
+  } else {
+    conversationHistory.forEach(m => addBubble(m.role === 'user' ? 'u' : 's', m.content));
+  }
+}
+
+function addBubble(type, text) {
+  const chatArea = document.getElementById('chatArea');
+  const div = document.createElement('div');
+  div.className = type === 's' ? 'bubble-s' : 'bubble-u';
+  div.textContent = text;
+  chatArea.appendChild(div);
+  chatArea.scrollTop = chatArea.scrollHeight;
+  return div;
+}
+
+function showTyping() {
+  const chatArea = document.getElementById('chatArea');
+  const div = document.createElement('div');
+  div.className = 'typing'; div.id = 'typingIndicator';
+  div.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+  chatArea.appendChild(div);
+  chatArea.scrollTop = chatArea.scrollHeight;
+}
+
+function removeTyping() {
+  const t = document.getElementById('typingIndicator');
+  if (t) t.remove();
+}
+
+async function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  addBubble('u', text);
+  conversationHistory.push({ role: 'user', content: text });
+  state.lastReflexion = text;
+  showTyping();
+  document.getElementById('sendBtn').classList.add('loading');
+
+  try {
+    const messages = [
+      { role: 'user', content: conversationHistory.length === 1 ? text : conversationHistory.map(m => `${m.role === 'user' ? 'Utilisateur' : 'Serenika'}: ${m.content}`).join('\n') }
+    ];
+    if (conversationHistory.length > 1) {
+      messages[0].content = conversationHistory.map(m => `${m.role === 'user' ? 'Utilisateur' : 'Serenika'}: ${m.content}`).join('\n');
+    }
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: `Tu es Serenika, un compagnon IA bienveillant dédié au bien-être mental. Ta philosophie : "La solution est déjà en l'utilisateur — tu lui montres juste où regarder et comment la mettre en pratique." Ton ton est doux, chaleureux, sans jugement. Tu poses une question à la fois. Tu ne donnes pas de longs discours. Tu guides doucement vers l'action. Tu réponds toujours en français. Max 3 phrases par réponse.`,
+        messages: conversationHistory.map(m => ({ role: m.role, content: m.content }))
+      })
+    });
+    const data = await response.json();
+    const reply = data.content[0].text;
+    removeTyping();
+    addBubble('s', reply);
+    conversationHistory.push({ role: 'assistant', content: reply });
+    updateStats('session');
+    updateJournal(text);
+  } catch (e) {
+    removeTyping();
+    addBubble('s', 'Je suis là. Prends ton temps. 🌊');
+  }
+  document.getElementById('sendBtn').classList.remove('loading');
+}
+
+document.getElementById('chatInput').addEventListener('keypress', e => { if (e.key === 'Enter') sendMessage(); });
+
+// STATS
+function updateStats(type) {
+  if (type === 'session') {
+    state.sessions++;
+    animateStat('statSessions', 'statSessionsNum', state.sessions);
+  }
+  if (type === 'defi') {
+    state.defis++;
+    animateStat('statDefis', 'statDefisNum', state.defis);
+  }
+}
+
+function animateStat(cardId, numId, val) {
+  const card = document.getElementById(cardId);
+  const num = document.getElementById(numId);
+  num.textContent = val;
+  card.classList.add('updated');
+  setTimeout(() => card.classList.remove('updated'), 600);
+}
+
+// JOURNAL
+function updateJournal(text) {
+  const now = new Date();
+  const h = now.getHours().toString().padStart(2,'0');
+  const m = now.getMinutes().toString().padStart(2,'0');
+  document.getElementById('journalDate').textContent = `Aujourd'hui · ${h}h${m}`;
+  document.getElementById('journalText').textContent = `"${text}"`;
+}
+
+// DEFIS
+function completeDefi(id, el) {
+  if (state.completedDefis.has(id)) return;
+  state.completedDefis.add(id);
+  el.classList.add('completed');
+  el.querySelector('.card-arrow').className = 'ti ti-check card-arrow';
+  el.querySelector('.card-arrow').style.color = 'var(--light)';
+  updateStats('defi');
+  showToastMsg('Défi complété · Bravo 🌊', 3000);
+}
+
+// MOOD
+function setMood(el) {
+  moodChosen = true;
+  document.querySelectorAll('.mood-pill').forEach(p => { p.classList.remove('pulsing','active'); });
+  el.classList.add('active');
+}
+
+// MUSIC
+function toggleMusic() {
+  musicOn = !musicOn;
+  ['Parler','Explorer'].forEach(s => {
+    const btn = document.getElementById('musicBtn'+s);
+    const label = document.getElementById('musicLabel'+s);
+    const dot = document.getElementById('hintDot'+s);
+    if (btn) { btn.classList.toggle('active', musicOn); btn.classList.remove('pulsing'); dot.classList.remove('visible'); label.textContent = musicOn ? 'En cours' : 'Ambiance'; }
+  });
+  showToastMsg(musicOn ? 'Ambiance musicale activée' : 'Ambiance musicale désactivée');
+}
+
+function showToastMsg(msg, duration = 2500) {
+  const toast = document.getElementById('toast');
+  document.getElementById('toastText').textContent = msg;
+  toast.classList.add('visible');
+  setTimeout(() => toast.classList.remove('visible'), duration);
+}
+
+// NAVIGATION
+function goTo(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => { if (n.getAttribute('onclick').includes("'"+name+"'")) n.classList.add('active'); });
+  if (name === 'parler') { initChat(); initParlerPulse(); }
+  if (name === 'explorer') initExplorerPulse();
+}
+
+// PULSES
+function initParlerPulse() {
+  if (parlerPulsed) return; parlerPulsed = true;
+  setTimeout(() => {
+    const btn = document.getElementById('musicBtnParler');
+    const dot = document.getElementById('hintDotParler');
+    if (!musicOn) { dot.classList.add('visible'); btn.classList.add('pulsing'); btn.addEventListener('animationend', () => { btn.classList.remove('pulsing'); dot.classList.remove('visible'); }, { once: true }); }
+  }, 1000);
+}
+
+function initExplorerPulse() {
+  if (explorerPulsed) return; explorerPulsed = true;
+  setTimeout(() => {
+    const btn = document.getElementById('musicBtnExplorer');
+    const dot = document.getElementById('hintDotExplorer');
+    if (!musicOn) { dot.classList.add('visible'); btn.classList.add('pulsing'); btn.addEventListener('animationend', () => { btn.classList.remove('pulsing'); dot.classList.remove('visible'); }, { once: true }); }
+    if (!moodChosen) {
+      document.querySelectorAll('.mood-pill').forEach(p => {
+        p.classList.add('pulsing');
+        p.addEventListener('animationend', () => { if (!moodChosen) p.classList.remove('pulsing'); }, { once: true });
+      });
+    }
+  }, 1000);
+}
+
+// INIT
+initChat();
+</script>
+</body>
+</html>
